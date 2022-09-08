@@ -3,5 +3,31 @@
 @tailwind utilities;
 
 .center-container {
-	@apply grid min-h-screen justify-items-center content-center;
+	@apply grid
+		min-h-screen
+		justify-items-center
+		content-center;
+}
+
+.calendar-week-day {
+	@apply w-10
+		h-10
+		text-neutral-500
+		flex
+		justify-center
+		items-center;
+}
+
+.calendar-day {
+	@apply w-10
+		h-10
+		text-neutral-700
+		flex
+		justify-center
+		items-center
+		cursor-pointer
+		rounded-full
+		hover:outline
+		hover:outline-1
+		hover:outline-neutral-800;
 }

@@ -1,0 +1,13 @@
+.link-button {
+	@apply px-20 py-10 duration-200 rounded-3xl shadow-lg;
+}
+
+.link-button-blue {
+	@apply link-button text-blue-50 bg-blue-500 hover:bg-blue-600 shadow-blue-500/50;
+}
+.link-button-green {
+	@apply link-button text-green-50 bg-green-500 hover:bg-green-600 shadow-green-500/50;
+}
+.link-button-indigo {
+	@apply link-button text-indigo-50 bg-indigo-500 hover:bg-indigo-600 shadow-indigo-500/50;
+}

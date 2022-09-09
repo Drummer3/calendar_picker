@@ -4,6 +4,7 @@
 
 .center-container {
 	@apply grid
+		gap-2
 		min-h-screen
 		justify-items-center
 		content-center;

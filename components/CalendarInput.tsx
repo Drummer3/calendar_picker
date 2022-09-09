@@ -10,7 +10,7 @@ export default function CalendarInput({
 	maxYear = 9999,
 	minYear = 0,
 }: CalendarInputProps) {
-	const [showCalendar, setShowCalendar] = useState(true)
+	const [showCalendar, setShowCalendar] = useState(false)
 	const [invalidDate, setInvalidDate] = useState(false)
 	const [calendarValue, setCalendarValue] = useState(moment())
 	const [calendarDisplay, setCalendarDisplay] = useState(
@@ -59,13 +59,13 @@ export default function CalendarInput({
 					Date should be between {minYear} and {maxYear}
 				</span>
 			) : null}
-			<label
+			<div
 				className={`flex py-1 px-4 ${
 					invalidDate ? 'border-red-500' : 'border-neutral-900'
 				} items-center justify-between border rounded-xl`}
 			>
-				<div>
-					<p className="text-neutral-500 text-xs">Date</p>
+				<label>
+					<p className="text-neutral-500 text-xs">From when available</p>
 					<input
 						className="border-0 focus:ring-0 rounded-xl p-0"
 						type="text"
@@ -74,14 +74,15 @@ export default function CalendarInput({
 						value={calendarDisplay}
 						onChange={() => {}}
 					/>
-				</div>
+				</label>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
 					strokeWidth={1.5}
 					stroke="currentColor"
-					className="w-6 h-6"
+					className="w-6 h-6 cursor-pointer"
+					onClick={() => setShowCalendar((prev) => !prev)}
 				>
 					<path
 						strokeLinecap="round"
@@ -89,7 +90,7 @@ export default function CalendarInput({
 						d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
 					/>
 				</svg>
-			</label>
+			</div>
 			{showCalendar && (
 				<div className="absolute w-max p-4 rounded-xl shadow-lg">
 					<div className="flex justify-between">

@@ -2,10 +2,16 @@ import moment from 'moment'
 import { useEffect, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 
-type CalendarInputProps = {}
+import styles from '../styles/CalendarInput.module.scss'
 
-export default function CalendarInput({}: CalendarInputProps) {
+type CalendarInputProps = { maxYear?: number; minYear?: number }
+
+export default function CalendarInput({
+	maxYear = 9999,
+	minYear = 0,
+}: CalendarInputProps) {
 	const [showCalendar, setShowCalendar] = useState(true)
+	const [invalidDate, setInvalidDate] = useState(false)
 	const [calendarValue, setCalendarValue] = useState(moment())
 	const [calendarDisplay, setCalendarDisplay] = useState(
 		moment().format('DD/MM/YYYY')
@@ -33,13 +39,31 @@ export default function CalendarInput({}: CalendarInputProps) {
 	}, [calendarValue])
 
 	useEffect(() => {
-		if (calendarDisplay.length === 10)
-			setCalendarValue(moment(calendarDisplay, 'DD/MM/YYYY'))
-	}, [calendarDisplay])
+		if (calendarDisplay.length === 10) {
+			if (
+				calendarDisplay.split('/')[2] <= maxYear.toString() &&
+				calendarDisplay.split('/')[2] >= minYear.toString()
+			) {
+				setInvalidDate(false)
+				setCalendarValue(moment(calendarDisplay, 'DD/MM/YYYY'))
+			} else {
+				setInvalidDate(true)
+			}
+		}
+	}, [calendarDisplay, maxYear, minYear])
 
 	return (
 		<div className="relative">
-			<label className="flex py-1 px-4 border-neutral-900 items-center justify-between border rounded-xl">
+			{invalidDate ? (
+				<span className="absolute text-red-500 -top-4 text-xs">
+					Date should be between {minYear} and {maxYear}
+				</span>
+			) : null}
+			<label
+				className={`flex py-1 px-4 ${
+					invalidDate ? 'border-red-500' : 'border-neutral-900'
+				} items-center justify-between border rounded-xl`}
+			>
 				<div>
 					<p className="text-neutral-500 text-xs">Date</p>
 					<input
@@ -48,6 +72,7 @@ export default function CalendarInput({}: CalendarInputProps) {
 						onKeyDown={handleKeyUp}
 						onFocus={() => setShowCalendar(true)}
 						value={calendarDisplay}
+						onChange={() => {}}
 					/>
 				</div>
 				<svg
@@ -69,9 +94,15 @@ export default function CalendarInput({}: CalendarInputProps) {
 				<div className="absolute w-max p-4 rounded-xl shadow-lg">
 					<div className="flex justify-between">
 						<button
-							onClick={() =>
-								setCalendarValue((prev) => moment(prev).add(-1, 'M'))
-							}
+							onClick={() => {
+								if (
+									moment(calendarValue).add(-1, 'M').format('YYYY') >=
+									minYear.toString()
+								) {
+									setInvalidDate(false)
+									setCalendarValue((prev) => moment(prev).add(-1, 'M'))
+								} else setInvalidDate(true)
+							}}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -90,9 +121,15 @@ export default function CalendarInput({}: CalendarInputProps) {
 						</button>
 						<p> {moment(calendarValue, 'MM').format('MMM YYYY')} </p>
 						<button
-							onClick={() =>
-								setCalendarValue((prev) => moment(prev).add(1, 'M'))
-							}
+							onClick={() => {
+								if (
+									moment(calendarValue).add(1, 'M').format('YYYY') <=
+									maxYear.toString()
+								) {
+									setInvalidDate(false)
+									setCalendarValue((prev) => moment(prev).add(1, 'M'))
+								} else setInvalidDate(true)
+							}}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -111,13 +148,13 @@ export default function CalendarInput({}: CalendarInputProps) {
 						</button>
 					</div>
 					<div className="grid gap-1 grid-cols-7 mt-4">
-						<div className="calendar-week-day">Mo</div>
-						<div className="calendar-week-day">Tu</div>
-						<div className="calendar-week-day">We</div>
-						<div className="calendar-week-day">Th</div>
-						<div className="calendar-week-day">Fr</div>
-						<div className="calendar-week-day">Sa</div>
-						<div className="calendar-week-day">Su</div>
+						<div className={styles.calendar_week_day}>Mo</div>
+						<div className={styles.calendar_week_day}>Tu</div>
+						<div className={styles.calendar_week_day}>We</div>
+						<div className={styles.calendar_week_day}>Th</div>
+						<div className={styles.calendar_week_day}>Fr</div>
+						<div className={styles.calendar_week_day}>Sa</div>
+						<div className={styles.calendar_week_day}>Su</div>
 						{moment(calendarValue).startOf('month').day()
 							? [
 									...Array(moment(calendarValue).startOf('month').day() - 1),
@@ -127,7 +164,11 @@ export default function CalendarInput({}: CalendarInputProps) {
 						{[...Array(calendarValue.daysInMonth())].map((e, idx) => (
 							<div
 								key={e}
-								className="calendar-day"
+								className={
+									calendarValue.get('D') === idx + 1
+										? styles.selected_calendar_day
+										: styles.calendar_day
+								}
 								onClick={() =>
 									setCalendarValue(
 										moment(

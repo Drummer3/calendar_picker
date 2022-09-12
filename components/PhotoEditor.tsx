@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react'
-import profilePhoto from '../assets/simpsons.jpeg'
+import profilePhoto from '../assets/human.jpg'
 import styles from '../styles/ProfilePhoto.module.scss'
 export default function PhotoEditor() {
 	const [scale, setScale] = useState(1000)
@@ -7,13 +7,26 @@ export default function PhotoEditor() {
 	const [imageOffset, setImageOffset] = useState([0, 0])
 	const canvasRef = useRef<HTMLCanvasElement>(null)
 
-	const handleDragging = (e: MouseEvent) =>
+	const handleDragging = (e: MouseEvent) => {
+		if (imageOffset[0] > 0 || imageOffset[1] > 0) return
 		setImageOffset([e.clientX - mousePosition[0], e.clientY - mousePosition[1]])
+	}
 
 	const handleDraggingStart = (e: MouseEvent) =>
 		setMousePosition([e.clientX, e.clientY])
 
+	const saveProfilePicture = () => {
+		if (!canvasRef.current) return
+		const element = document.createElement('a')
+		element.href = canvasRef.current.toDataURL('image/png')
+		element.download = 'image.jpg'
+		element.click()
+	}
 	useEffect(() => {
+		if (imageOffset[0] > 0 || imageOffset[1] > 0) {
+			setImageOffset([0, 0])
+			return
+		}
 		const image = new Image()
 		image.src = profilePhoto.src
 		const canvas = canvasRef.current
@@ -22,17 +35,16 @@ export default function PhotoEditor() {
 		image.onload = () => {
 			context.drawImage(
 				image,
-				imageOffset[0] * -1,
-				imageOffset[1] * -1,
+				0,
+				0,
 				image.width,
 				image.height,
-				0,
-				0,
+				imageOffset[0],
+				imageOffset[1],
 				canvas.width * (scale / 1000),
 				canvas.height * (scale / 1000)
 			)
 		}
-		image.style.transform = `translate(${imageOffset[0]}px, ${imageOffset[1]}px)`
 	}, [canvasRef, scale, imageOffset])
 
 	return (
@@ -50,7 +62,7 @@ export default function PhotoEditor() {
 				<input type="file" id="fileInput" name="fileInput" className="hidden" />
 				<canvas
 					ref={canvasRef}
-					className="relative my-4 mx-auto w-96 aspect-square overflow-hidden"
+					className="relative my-4 mx-auto w-full aspect-square overflow-hidden"
 					draggable
 					onDragStart={handleDraggingStart}
 					onDragOver={handleDragging}
@@ -122,7 +134,10 @@ export default function PhotoEditor() {
 					<button className="flex-1 py-4 bg-white border-2 border-neutral-700 rounded-xl hover:bg-neutral-200 duration-150">
 						Cancel
 					</button>
-					<button className="flex-1 py-4 bg-orange-500 text-white rounded-xl hover:bg-orange-600 duration-150">
+					<button
+						onClick={saveProfilePicture}
+						className="flex-1 py-4 bg-orange-500 text-white rounded-xl hover:bg-orange-600 duration-150"
+					>
 						Save changes
 					</button>
 				</div>

@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { MouseEvent, useEffect, useRef, useState } from 'react'
 import profilePhoto from '../assets/simpsons.jpeg'
 import styles from '../styles/ProfilePhoto.module.scss'
@@ -6,12 +5,35 @@ export default function PhotoEditor() {
 	const [scale, setScale] = useState(1000)
 	const [mousePosition, setMousePosition] = useState([0, 0])
 	const [imageOffset, setImageOffset] = useState([0, 0])
+	const canvasRef = useRef<HTMLCanvasElement>(null)
 
 	const handleDragging = (e: MouseEvent) =>
 		setImageOffset([e.clientX - mousePosition[0], e.clientY - mousePosition[1]])
 
 	const handleDraggingStart = (e: MouseEvent) =>
 		setMousePosition([e.clientX, e.clientY])
+
+	useEffect(() => {
+		const image = new Image()
+		image.src = profilePhoto.src
+		const canvas = canvasRef.current
+		const context = canvas?.getContext('2d')
+		if (!context || !canvas) return
+		image.onload = () => {
+			context.drawImage(
+				image,
+				imageOffset[0] * -1,
+				imageOffset[1] * -1,
+				image.width,
+				image.height,
+				0,
+				0,
+				canvas.width * (scale / 1000),
+				canvas.height * (scale / 1000)
+			)
+		}
+		image.style.transform = `translate(${imageOffset[0]}px, ${imageOffset[1]}px)`
+	}, [canvasRef, scale, imageOffset])
 
 	return (
 		<div className="w-screen h-screen flex justify-center items-center backdrop-brightness-75">
@@ -26,13 +48,14 @@ export default function PhotoEditor() {
 					</p>
 				</label>
 				<input type="file" id="fileInput" name="fileInput" className="hidden" />
-				<div
+				<canvas
+					ref={canvasRef}
 					className="relative my-4 mx-auto w-96 aspect-square overflow-hidden"
 					draggable
 					onDragStart={handleDraggingStart}
 					onDragOver={handleDragging}
 				>
-					<div className="absolute flex justify-center items-center inset-0 z-50 backdrop-brightness-50">
+					{/* <div className="absolute flex justify-center items-center inset-0 z-50 backdrop-brightness-50">
 						<div className="w-[96%] h-[96%] rounded-full backdrop-brightness-200"></div>
 					</div>
 					<Image
@@ -47,8 +70,8 @@ export default function PhotoEditor() {
 							}px) scale(${scale / 1000})`,
 						}}
 						quality={100}
-					/>
-				</div>
+					/> */}
+				</canvas>
 				<div className="text-neutral-500 gap-2 flex justify-between items-center">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

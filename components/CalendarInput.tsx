@@ -71,7 +71,6 @@ export default function CalendarInput({
 						type="text"
 						onKeyDown={handleKeyUp}
 						onFocus={() => setShowCalendar(true)}
-						onBlur={() => setShowCalendar(false)}
 						value={calendarDisplay}
 						onChange={() => {}}
 					/>

@@ -1,4 +1,4 @@
-## Calendar date picker and profile picture selector
+# Calendar date picker
 
 ```bash
 npm install

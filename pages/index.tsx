@@ -1,13 +1,9 @@
-import type { NextPage } from 'next'
-import LinkButton from '../components/LinkButton'
+import CalendarInput from '../components/CalendarInput'
 
-const Home: NextPage = () => {
+export default function Calendar() {
 	return (
 		<main className="center-container">
-			<LinkButton to="/calendar" name="Calendar" color="green" />
-			<LinkButton to="/profile-photo" name="Profile Photo" color="indigo" />
+			<CalendarInput maxYear={2030} minYear={2020} />
 		</main>
 	)
 }
-
-export default Home
